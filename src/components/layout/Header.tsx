@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Search, Menu, User, Globe } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
@@ -14,12 +14,11 @@ interface HeaderProps {
 
 export default function Header({ variant = 'default' }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState('')
-  const navigate = useNavigate()
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`)
+      window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`
     }
   }
 

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Header } from './components/layout/Header'
-import { HeroSection } from './components/HeroSection'
-import { PropertyGrid } from './components/PropertyGrid'
-import { Footer } from './components/layout/Footer'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { blink } from './blink/client'
+import HomePage from './pages/HomePage'
+import SearchPage from './pages/SearchPage'
+import PropertyPage from './pages/PropertyPage'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -29,14 +29,15 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <Header />
-      <main>
-        <HeroSection />
-        <PropertyGrid />
-      </main>
-      <Footer />
-    </div>
+    <Router>
+      <div className="min-h-screen bg-white">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/property/:id" element={<PropertyPage />} />
+        </Routes>
+      </div>
+    </Router>
   )
 }
 

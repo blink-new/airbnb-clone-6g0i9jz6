@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Search, Calendar, Users } from 'lucide-react'
-import { Button } from '../components/ui/button'
-import { Input } from '../components/ui/input'
-import { Card, CardContent } from '../components/ui/card'
+import { HeroSection } from '../components/HeroSection'
+import { PropertyCard } from '../components/PropertyCard'
+import { Footer } from '../components/layout/Footer'
 import Header from '../components/layout/Header'
-import PropertyCard from '../components/PropertyCard'
-import { blink } from '../blink/client'
 
 interface Property {
   id: string
@@ -13,15 +10,15 @@ interface Property {
   location: string
   price: number
   rating: number
+  reviewCount: number
   images: string[]
-  host: string
-  type: string
+  isSuperhost: boolean
 }
 
 export default function HomePage() {
-  const [searchLocation, setSearchLocation] = useState('')
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
+  const [wishlistedProperties, setWishlistedProperties] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     loadProperties()
@@ -29,67 +26,87 @@ export default function HomePage() {
 
   const loadProperties = async () => {
     try {
-      // For now, we'll use mock data. Later we'll fetch from the database
+      // Mock data - in a real app, this would fetch from the database
       const mockProperties: Property[] = [
         {
           id: '1',
-          title: 'Cozy Apartment in Downtown',
-          location: 'New York, NY',
-          price: 120,
-          rating: 4.8,
-          images: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=300&fit=crop'],
-          host: 'Sarah',
-          type: 'Entire apartment'
+          title: 'Entire home in Malibu',
+          location: 'Malibu, California',
+          price: 450,
+          rating: 4.9,
+          reviewCount: 127,
+          images: ['https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=500&h=500&fit=crop'],
+          isSuperhost: true
         },
         {
           id: '2',
-          title: 'Modern Loft with City Views',
-          location: 'San Francisco, CA',
-          price: 200,
-          rating: 4.9,
-          images: ['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500&h=300&fit=crop'],
-          host: 'Michael',
-          type: 'Entire loft'
+          title: 'Private room in Manhattan',
+          location: 'New York, New York',
+          price: 180,
+          rating: 4.8,
+          reviewCount: 89,
+          images: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=500&fit=crop'],
+          isSuperhost: false
         },
         {
           id: '3',
-          title: 'Charming Studio Near Beach',
-          location: 'Miami, FL',
-          price: 85,
-          rating: 4.7,
-          images: ['https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=500&h=300&fit=crop'],
-          host: 'Emma',
-          type: 'Entire studio'
+          title: 'Entire villa in Tuscany',
+          location: 'Florence, Italy',
+          price: 320,
+          rating: 4.95,
+          reviewCount: 203,
+          images: ['https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=500&h=500&fit=crop'],
+          isSuperhost: true
         },
         {
           id: '4',
-          title: 'Luxury Villa with Pool',
-          location: 'Los Angeles, CA',
-          price: 350,
-          rating: 5.0,
-          images: ['https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=500&h=300&fit=crop'],
-          host: 'David',
-          type: 'Entire villa'
+          title: 'Cozy cabin in the mountains',
+          location: 'Aspen, Colorado',
+          price: 275,
+          rating: 4.7,
+          reviewCount: 156,
+          images: ['https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=500&h=500&fit=crop'],
+          isSuperhost: false
         },
         {
           id: '5',
-          title: 'Historic Brownstone',
-          location: 'Boston, MA',
-          price: 180,
+          title: 'Beachfront apartment',
+          location: 'Miami, Florida',
+          price: 220,
           rating: 4.6,
-          images: ['https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&h=300&fit=crop'],
-          host: 'Jennifer',
-          type: 'Entire house'
+          reviewCount: 94,
+          images: ['https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=500&h=500&fit=crop'],
+          isSuperhost: true
         },
         {
           id: '6',
-          title: 'Mountain Cabin Retreat',
-          location: 'Denver, CO',
-          price: 140,
+          title: 'Modern loft downtown',
+          location: 'Seattle, Washington',
+          price: 195,
           rating: 4.8,
-          images: ['https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=500&h=300&fit=crop'],
-          host: 'Robert',
-          type: 'Entire cabin'
+          reviewCount: 112,
+          images: ['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500&h=500&fit=crop'],
+          isSuperhost: false
+        },
+        {
+          id: '7',
+          title: 'Historic townhouse',
+          location: 'Boston, Massachusetts',
+          price: 165,
+          rating: 4.9,
+          reviewCount: 78,
+          images: ['https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=500&h=500&fit=crop'],
+          isSuperhost: true
+        },
+        {
+          id: '8',
+          title: 'Desert retreat',
+          location: 'Scottsdale, Arizona',
+          price: 310,
+          rating: 4.7,
+          reviewCount: 145,
+          images: ['https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&h=500&fit=crop'],
+          isSuperhost: false
         }
       ]
       
@@ -101,10 +118,16 @@ export default function HomePage() {
     }
   }
 
-  const handleSearch = () => {
-    if (searchLocation.trim()) {
-      window.location.href = `/search?location=${encodeURIComponent(searchLocation)}`
-    }
+  const handleWishlistToggle = (propertyId: string) => {
+    setWishlistedProperties(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(propertyId)) {
+        newSet.delete(propertyId)
+      } else {
+        newSet.add(propertyId)
+      }
+      return newSet
+    })
   }
 
   return (
@@ -112,78 +135,17 @@ export default function HomePage() {
       <Header />
       
       {/* Hero Section */}
-      <section className="relative h-[600px] bg-gradient-to-r from-pink-500 to-rose-500 flex items-center justify-center">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative z-10 text-center text-white px-4">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Find your next adventure
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 opacity-90">
-            Discover amazing places to stay around the world
-          </p>
-          
-          {/* Search Widget */}
-          <Card className="max-w-4xl mx-auto bg-white text-black">
-            <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Where</label>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      placeholder="Search destinations"
-                      value={searchLocation}
-                      onChange={(e) => setSearchLocation(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Check in</label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input placeholder="Add dates" className="pl-10" />
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Check out</label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input placeholder="Add dates" className="pl-10" />
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Who</label>
-                  <div className="relative">
-                    <Users className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input placeholder="Add guests" className="pl-10" />
-                  </div>
-                </div>
-              </div>
-              
-              <Button 
-                onClick={handleSearch}
-                className="w-full mt-6 bg-primary hover:bg-primary/90 text-white py-3 text-lg font-medium"
-              >
-                Search
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+      <HeroSection />
 
       {/* Properties Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Explore nearby stays
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              Stays nearby
             </h2>
-            <p className="text-lg text-gray-600">
-              Discover unique places to stay with local hosts in 191 countries
+            <p className="text-gray-600">
+              Discover great places to stay
             </p>
           </div>
 
@@ -203,16 +165,28 @@ export default function HomePage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {properties.map((property) => (
-                <PropertyCard key={property.id} property={property} />
+                <PropertyCard
+                  key={property.id}
+                  {...property}
+                  isWishlisted={wishlistedProperties.has(property.id)}
+                  onWishlistToggle={handleWishlistToggle}
+                />
               ))}
             </div>
           )}
+
+          {/* Load More */}
+          <div className="mt-12 text-center">
+            <button className="px-8 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:border-gray-400 transition-colors">
+              Show more
+            </button>
+          </div>
         </div>
       </section>
 
       {/* Categories Section */}
       <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12">Browse by property type</h2>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -222,7 +196,7 @@ export default function HomePage() {
               { name: 'Unique stays', image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=300&h=200&fit=crop' },
               { name: 'Pet-friendly', image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=300&h=200&fit=crop' }
             ].map((category) => (
-              <Card key={category.name} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+              <div key={category.name} className="overflow-hidden rounded-xl hover:shadow-lg transition-shadow cursor-pointer bg-white">
                 <div className="aspect-square relative">
                   <img
                     src={category.image}
@@ -230,14 +204,16 @@ export default function HomePage() {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <CardContent className="p-4">
+                <div className="p-4">
                   <h3 className="font-semibold text-lg">{category.name}</h3>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   )
 }
